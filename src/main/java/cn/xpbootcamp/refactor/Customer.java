@@ -22,33 +22,37 @@ public class Customer {
 
     public String statement() {
         double totalAmount = 0d;
-        int frequentRenterPoints = 0;
+        int totalFrequentRenterPoints = 0;
         Enumeration<Rental> rentals = this.rentals.elements();
-        StringBuilder result = new StringBuilder("Rental Record for " + getName() + "：\n");
+        StringBuilder receiptInfo = new StringBuilder("Rental Record for " + getName() + "：\n");
         while (rentals.hasMoreElements()) {
             Rental rental = rentals.nextElement();
-            //show figures for this rental
-            //determine amounts for each line
-            double rentCharge = getRentCharge(rental);
-            //add frequent renter points
-            frequentRenterPoints++;
-            if ((rental.getMovie().getPriceCode() == Movie.NEW_RELEASE) && rental.getDaysRented() > 1)
-                frequentRenterPoints++;
 
-            //show figures for this rental
-            result.append("\t")
+            double rentCharge = getSingleMovieRentCharge(rental);
+
+            totalFrequentRenterPoints += getFrequentRenterPoints(rental);
+
+            receiptInfo.append("\t")
                   .append(rental.getMovie().getTitle())
                   .append("\t")
                   .append(rentCharge).append("\n");
             totalAmount += rentCharge;
         }
         //add footer lines
-        result.append("Amount owed is ").append(totalAmount).append("\n");
-        result.append("You earned ").append(frequentRenterPoints).append(" frequent renter points");
-        return result.toString();
+        receiptInfo.append("Amount owed is ").append(totalAmount).append("\n");
+        receiptInfo.append("You earned ").append(totalFrequentRenterPoints).append(" frequent renter points");
+        return receiptInfo.toString();
     }
 
-    private double getRentCharge(Rental rental) {
+    private int getFrequentRenterPoints(Rental rental) {
+        int frequentRenterPoints = 1;
+        if ((rental.getMovie().getPriceCode() == Movie.NEW_RELEASE) && rental.getDaysRented() > 1) {
+            frequentRenterPoints+=1;
+        }
+        return frequentRenterPoints;
+    }
+
+    private double getSingleMovieRentCharge(Rental rental) {
         double rentCharge = 0d;
         switch (rental.getMovie().getPriceCode()) {
             case Movie.HISTORY:
