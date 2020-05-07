@@ -21,7 +21,7 @@ public class Customer {
     }
 
     public String statement() {
-        double totalAmount = 0d;
+        double totalRentCharge = 0d;
         int totalFrequentRenterPoints = 0;
         Enumeration<Rental> rentals = this.rentals.elements();
         StringBuilder receiptInfo = new StringBuilder("Rental Record for " + getName() + "：\n");
@@ -29,25 +29,31 @@ public class Customer {
             Rental rental = rentals.nextElement();
 
             double rentCharge = getSingleMovieRentCharge(rental);
+            totalRentCharge += rentCharge;
 
             totalFrequentRenterPoints += getFrequentRenterPoints(rental);
 
             receiptInfo.append("\t")
-                  .append(rental.getMovie().getTitle())
-                  .append("\t")
-                  .append(rentCharge).append("\n");
-            totalAmount += rentCharge;
+                       .append(rental.getMovie().getTitle())
+                       .append("\t")
+                       .append(rentCharge)
+                       .append("\n");
         }
-        //add footer lines
-        receiptInfo.append("Amount owed is ").append(totalAmount).append("\n");
-        receiptInfo.append("You earned ").append(totalFrequentRenterPoints).append(" frequent renter points");
+
+        receiptInfo.append("Amount owed is ")
+                   .append(totalRentCharge)
+                   .append("\n")
+                   .append("You earned ")
+                   .append(totalFrequentRenterPoints)
+                   .append(" frequent renter points");
+
         return receiptInfo.toString();
     }
 
     private int getFrequentRenterPoints(Rental rental) {
         int frequentRenterPoints = 1;
         if ((rental.getMovie().getPriceCode() == Movie.NEW_RELEASE) && rental.getDaysRented() > 1) {
-            frequentRenterPoints+=1;
+            frequentRenterPoints += 1;
         }
         return frequentRenterPoints;
     }
